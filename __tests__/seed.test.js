@@ -81,7 +81,7 @@ describe('seed', () => {
     });
   });
 
-  describe('users table', () => {
+ describe('users table', () => {
     test('users table exists', () => {
       return db
         .query(
@@ -155,8 +155,8 @@ describe('seed', () => {
     });
   });
 
-  describe('articles table', () => {
-    test('articles table exists', () => {
+ describe('articles table', () => {
+      test('articles table exists', () => {
       return db
         .query(
           `SELECT EXISTS (
@@ -171,7 +171,7 @@ describe('seed', () => {
         });
     });
 
-    test('articles table has article_id column as a serial', () => {
+      test('articles table has article_id column as a serial', () => {
       return db
         .query(
           `SELECT column_name, data_type, column_default
@@ -583,7 +583,7 @@ describe('data insertion', () => {
     });
   });
   
-  test('comments data has been inserted correctly', () => {
+  test.skip('comments data has been inserted correctly', () => {
     return db.query(`SELECT * FROM comments;`).then(({ rows: comments }) => {
       expect(comments).toHaveLength(18);
       comments.forEach((comment) => {

@@ -1,3 +1,8 @@
 # NC News Seeding
 
-- Instructions for this sprint can be found at https://l2c.northcoders.com/courses/be/seeding-nc-news
+- Create the following .env files at the root of the project:
+ .env.development
+ .env.test
+- .env.development: PGDATABASE= *db_name*
+- .env.test: PGDATABASE=*test_db_name*
+- add .env.* to .gitignore
