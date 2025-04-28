@@ -584,7 +584,7 @@ describe('data insertion', () => {
     });
   });
   
-  test.skip('comments data has been inserted correctly', () => {
+  test('comments data has been inserted correctly', () => {
     return db.query(`SELECT * FROM comments;`).then(({ rows: comments }) => {
       expect(comments).toHaveLength(18);
       comments.forEach((comment) => {
@@ -594,6 +594,7 @@ describe('data insertion', () => {
         expect(comment).toHaveProperty('author');
         expect(comment).toHaveProperty('votes');
         expect(comment).toHaveProperty('created_at');
+        expect(typeof comment.article_id).toBe("number");
       });
     });
   });
