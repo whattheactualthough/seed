@@ -81,7 +81,6 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
        const articlesRefObject = createRef(result.rows);
        const formattedComments = commentData.map((comment) => {
         const timeFormattedComments = convertTimestampToDate(comment);
-        console.log(timeFormattedComments)
         return [
           articlesRefObject[comment.article_title],
           timeFormattedComments.body,
