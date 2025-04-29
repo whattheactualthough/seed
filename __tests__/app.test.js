@@ -79,7 +79,6 @@ describe("GET /api/articles", () => {
     .get("/api/articles")
     .expect(200)
     .then(({body}) => {
-      console.log(body)
       expect(body.articles.length).toBeGreaterThan(1);
       expect(body.articles).toBeSortedBy("created_at")
       body.articles.forEach((article) => {
@@ -95,6 +94,44 @@ describe("GET /api/articles", () => {
       });
     });
   });
+ });
+
+ describe("GET api/articles/:article_id/comments", () => {
+  test("200: responds with an array of comments for given article", () => {
+    return request(app)
+    .get("/api/articles/5/comments")
+    .expect(200)
+    .then((response) => {
+      expect(response.body.comments.length).toBeGreaterThan(0)
+      expect(response.body.comments).toBeSorted("created_at")
+      response.body.comments.forEach((comment) => {
+        expect(comment).toMatchObject({
+          comment_id:expect.any(Number),
+          votes:expect.any(Number),
+          created_at:expect.any(String),
+          author:expect.any(String),
+          body:expect.any(String),
+          article_id: expect.any(Number)
+        });
+      });
+    });
+  });
+    test("400: Bad Request error message for invalid article_id", ()=> {
+      return request(app)
+      .get("/api/articles/morecats/comments")
+      .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe("Bad Request")
+    });
+    });
+    test("404: responds with Not Found for out of range requests", () => {
+      return request(app)
+      .get("/api/articles/10000/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not Found")
+      });
+    });
  });
  
  
