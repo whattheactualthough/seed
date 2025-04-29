@@ -16,4 +16,43 @@ const selectCommentsByArticleId = (article_id) => {
         });
 };
 
-module.exports = {selectCommentsByArticleId}
+const insertCommentByArticleId = (commentBody, userName, article_id) => {
+    if(!commentBody || !userName || !article_id){
+        return Promise.reject({status:400, msg:"Missing required fields"})
+    }
+
+   return Promise.all([checkArticleExists(article_id), checkUserExists(userName)])
+    .then(() => {
+        return db.query(`INSERT INTO comments(author, body, article_id) VALUES ($1, $2, $3) RETURNING *`, [userName, commentBody, article_id])
+        .then((result) => {
+            return result.rows[0]
+    }) 
+    }) 
+}
+
+const checkUserExists = async (user) => {
+    const dbOutput = await db.query(
+      `SELECT * FROM users WHERE users.username = $1;`,
+      [user]
+    );
+    if (dbOutput.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "User not found" });
+    } else {
+        return true
+    }
+  };
+
+  const checkArticleExists = async (article_id) => {
+    const dbOutput = await db.query(
+        `SELECT * FROM articles WHERE articles.article_id = $1;`,
+        [article_id]
+      );
+      if (dbOutput.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Article not found" });
+      } else {
+          return true
+      }
+    };
+  
+
+module.exports = {selectCommentsByArticleId,insertCommentByArticleId}

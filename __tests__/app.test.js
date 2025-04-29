@@ -133,5 +133,75 @@ describe("GET /api/articles", () => {
       });
     });
  });
+
+ describe("POST api/articles/:article_id/comments", () => {
+  test("200: responds with posted comment if comment is valid and user exists in users db", () => {
+    const testComment = {
+      username: "lurker",
+      body: "testing testing"
+    }
+    return request(app)
+    .post("/api/articles/5/comments")
+    .send(testComment)
+    .expect(201)
+    .then((response) => {
+      const comment = response.body.comment
+      expect(comment.comment_id).toBe(19),
+      expect(comment.article_id).toBe(5),
+      expect(comment.body).toBe("testing testing"),
+      expect(comment.author).toBe("lurker"),
+      expect(typeof comment.created_at).toBe("string")
+      });
+    });
+    test("400: responds with Missing required fields if comment object is empty", () => {
+      const testComment = {}
+      return request(app)
+      .post("/api/articles/5/comments")
+      .send(testComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Missing required fields")
+      })
+    })
+    test("400: responds with Missing required fields if comment object is missing one or both required fields", () => {
+      const testComment = {
+        username: "lurker"
+      }
+      return request(app)
+      .post("/api/articles/5/comments")
+      .send(testComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Missing required fields")
+      })
+    })
+    test("404: Responds with User not found if user is invalid ", () => {
+      const testComment = {
+        username: "notAUser",
+        body: "testing testing"
+      }
+      return request(app)
+      .post("/api/articles/5/comments")
+      .send(testComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("User not found")
+      })
+    })
+    test("404: Responds with Article not found if article_id is invalid ", () => {
+      const testComment = {
+        username: "notAUser",
+        body: "testing testing"
+      }
+      return request(app)
+      .post("/api/articles/notanarticle/comments")
+      .send(testComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request")
+      })
+    })
+  });
+
  
  

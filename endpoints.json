@@ -54,6 +54,13 @@
       "author": "icellusedkars",
       "created_at": "2020-06-09T05:00:00.000Z"
     }]
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description" : "responds with posted comment",
+    "queries": ["article_id"],
+    "exampleResponse": {
+      
+    }
   }
 }
 
