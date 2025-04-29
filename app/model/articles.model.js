@@ -15,5 +15,27 @@ const selectArticleById = (article_id) => {
     });
 };
 
+const selectArticles = () => {
+    return db
+    .query(`SELECT articles.title, articles.article_id, articles.topic, articles.author, articles.created_at, articles.votes, 
+    COUNT(comments.article_id)::INT
+    AS comment_count
+    FROM articles 
+    LEFT JOIN comments 
+     ON articles.article_id = comments.article_id GROUP BY articles.article_id 
+    ORDER BY articles.created_at;`)
+    .then((result) => {
+        return result.rows
+    })
+ }
 
-module.exports = selectArticleById
+ //COUNT comments.comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles_article_id SORT BY date DESC;
+
+ // `SELECT title, topic, author, created_at, votes FROM articles AS comment_count LEFT JOIN comments ON articles.article_id = comments.article_id `
+ 
+
+
+
+
+
+module.exports = {selectArticleById, selectArticles}

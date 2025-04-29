@@ -47,7 +47,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );`)
       })
-      .then(() => {// format data to fit into topic table : slug, description, img_url)
+      .then(() => {
        const formattedTopics = topicData.map((topic) => {
      return [topic.slug, topic.description, topic.img_url];
       });
