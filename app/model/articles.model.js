@@ -29,9 +29,6 @@ const selectArticles = () => {
     })
  }
 
- //COUNT comments.comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles_article_id SORT BY date DESC;
-
- // `SELECT title, topic, author, created_at, votes FROM articles AS comment_count LEFT JOIN comments ON articles.article_id = comments.article_id `
  
 
 
