@@ -39,3 +39,36 @@ describe("GET /api/topics", () => {
     });
   });
 });
+
+describe("GET /api/articles/:article_id", () => {
+  test("200: responds with article object of correct id", () => {
+    return request(app)
+    .get("/api/articles/5")
+    .expect(200)
+    .then((response) => {
+      const article = response.body.article[0]
+      expect(article.title).toEqual("UNCOVERED: catspiracy to bring down democracy"),
+      expect(article.topic).toBe("cats"),
+      expect(article.author).toBe("rogersop"),
+      expect(article.body).toBe("Bastet walks amongst us, and the cats are taking arms!"),
+      expect(article.created_at).toBe('2020-08-03T13:14:00.000Z')
+      expect(article.votes).toBe(0)
+  });
+});
+  test("400: responds with Bad Request for psql errors", () => {
+    return request(app)
+    .get("/api/articles/cats")
+    .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe("Bad Request")
+    });
+  });
+  test("404: responds with Not Found for out of range requests", () => {
+    return request(app)
+    .get("/api/articles/10000")
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe("Not Found")
+    });
+  });
+});
