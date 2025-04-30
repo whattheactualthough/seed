@@ -80,4 +80,5 @@ const checkUserExists = async (user) => {
     
   
 
-module.exports = {selectCommentsByArticleId,insertCommentByArticleId, checkArticleExists, deleteComment}
+module.exports = {selectCommentsByArticleId,insertCommentByArticleId, checkArticleExists, 
+deleteComment}
