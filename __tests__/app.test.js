@@ -199,9 +199,69 @@ describe("GET /api/articles", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad Request")
+        // Correct this test uses notaUser and notanarticle together.
       })
     })
   });
+
+  describe("PATCH /api/articles/:article_id", () => {
+    test("200: responds with updated article", () => {
+    const testPatch = {inc_votes: 10};
+    return request(app)
+    .patch("/api/articles/5")
+    .send(testPatch)
+    .expect(200)
+    .then((result) => {
+      const article = result.body.article
+      expect(article.votes).toBe(10)
+  });
+  });
+  test("400: responds with Missing required field when passed an empty object", () => {
+    return request(app)
+    .patch("/api/articles/5")
+    .send({})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe("Missing required fields")
+    })
+   });
+   test("400: responds with Bad request when passed invalid value as inc_votes", () => {
+    return request(app)
+    .patch("/api/articles/5")
+    .send({inc_votes: "notANumber"})
+    .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe("Bad request")
+    })
+   });
+   test('404: responds with Article not found when passed a non existent article_id', () => {
+    return request(app)
+    .patch("/api/articles/1000")
+    .send({inc_votes: 5})
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("Article not found")
+    })
+   });
+   test('400: responds with Bad request when passed an invalid article_id', () => {
+    return request(app)
+    .patch("/api/articles/notAnArticle")
+    .send({inc_vote:5})
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Bad request")
+    })
+   });
+ })
+   
+
+
+
+
+// errors - no article_id out of range and incorrect value 22p02
+
+
+   
 
  
  

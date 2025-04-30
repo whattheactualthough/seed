@@ -55,4 +55,4 @@ const checkUserExists = async (user) => {
     };
   
 
-module.exports = {selectCommentsByArticleId,insertCommentByArticleId}
+module.exports = {selectCommentsByArticleId,insertCommentByArticleId, checkArticleExists}

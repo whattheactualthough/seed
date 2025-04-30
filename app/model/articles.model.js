@@ -1,4 +1,5 @@
 const db = require("../../db/connection")
+const {checkArticleExists} = require("./comments.model")
 
 const selectArticleById = (article_id) => {
    return db
@@ -29,10 +30,40 @@ const selectArticles = () => {
     })
  }
 
+ const updateArticleVotes = (article_id, inc_votes) => {
+    
+    const article_id_num = Number(article_id)
+    if(isNaN(article_id_num)){
+        return Promise.reject({status: 400, msg: "Bad request"})
+    }
+    if(!article_id || inc_votes === undefined){
+        return Promise.reject({status:400, msg:"Missing required fields"})
+    }
+    if(typeof inc_votes !== "number" || isNaN(article_id_num) ){
+        return Promise.reject({status:400, msg: "Bad request"})
+    }
+   return checkArticleExists(article_id)
+    .then(() => {
+    return db.query(`UPDATE articles
+        SET votes = votes + $1
+        WHERE article_id = $2
+        RETURNING *;`, [inc_votes, article_id])
+        .then((result) => {
+             return result.rows[0];
+            })
+              
+         });
+    };
+ 
+
+
+      
+
+
  
 
 
 
 
 
-module.exports = {selectArticleById, selectArticles}
+module.exports = {selectArticleById, selectArticles, updateArticleVotes}
