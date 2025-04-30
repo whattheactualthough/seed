@@ -56,7 +56,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     })
      .then(() => { // format data to fit into users table : username, name, avatar_url
   const formattedUsers = userData.map((user) => {
-    return[user.username, user.name, user.img_url];
+    return[user.username, user.name, user.avatar_url];
   });
   const insertUserQuery = format(`INSERT INTO users (username, name, avatar_url) VALUES %L;`, formattedUsers);
   return db.query(insertUserQuery)
