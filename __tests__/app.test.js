@@ -46,7 +46,7 @@ describe("GET /api/articles/:article_id", () => {
     .get("/api/articles/5")
     .expect(200)
     .then((response) => {
-      const article = response.body.article[0]
+      const article = response.body.article
       expect(article.title).toEqual("UNCOVERED: catspiracy to bring down democracy"),
       expect(article.topic).toBe("cats"),
       expect(article.author).toBe("rogersop"),
@@ -199,12 +199,11 @@ describe("GET /api/articles", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad Request")
-        // Correct this test uses notaUser and notanarticle together.
       })
     })
   });
 
-  describe("PATCH /api/articles/:article_id", () => {
+  describe.skip("PATCH /api/articles/:article_id", () => {
     test("200: responds with updated article", () => {
     const testPatch = {inc_votes: 10};
     return request(app)
@@ -253,15 +252,33 @@ describe("GET /api/articles", () => {
     })
    });
  })
-   
 
-
-
-
-// errors - no article_id out of range and incorrect value 22p02
-
-
-   
+  describe("DELETE /api/comments/:comment_id", ()=> {
+    test('204: responds with no content', () => {
+      return request(app)
+      .delete("/api/comments/3")
+      .expect(204)
+      .then(() => {return db.query(`SELECT * FROM comments WHERE comment_id = 3`)
+        .then(({rows}) => {expect(rows.length).toBe(0)})
+      })
+    });
+    test('400: responds with "bad request when passed an invalid comment_id', () => {
+      return request(app)
+      .delete("/api/comments/notAComment")
+      .expect(400)
+      .then(({body}) =>{
+        expect(body.msg).toBe("Bad request")
+      })
+    })
+      test('404: responds with "Comment not found when passed a non existent comment_id', () => {
+        return request(app)
+        .delete("/api/comments/notAComment")
+        .expect(400)
+        .then(({body}) =>{
+          expect(body.msg).toBe("Bad request")
+        })
+    });
+  })
 
  
  

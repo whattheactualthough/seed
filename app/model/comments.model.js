@@ -30,6 +30,18 @@ const insertCommentByArticleId = (commentBody, userName, article_id) => {
     }) 
 }
 
+const deleteComment = (comment_id) => {
+ 
+  const comment_id_num = Number(comment_id)
+  if(isNaN(comment_id_num)){
+      return Promise.reject({status: 400, msg: "Bad request"})
+  }
+  return checkCommentExists(comment_id_num)
+  .then(() => {
+    return db.query(`DELETE FROM comments WHERE comment_id = $1;`, [comment_id])
+    })
+  }
+
 const checkUserExists = async (user) => {
     const dbOutput = await db.query(
       `SELECT * FROM users WHERE users.username = $1;`,
@@ -53,6 +65,19 @@ const checkUserExists = async (user) => {
           return true
       }
     };
+
+    const checkCommentExists = async (comment_id) => {
+      const dbOutput = await db.query(
+          `SELECT * FROM comments WHERE comments.comment_id = $1;`,
+          [comment_id]
+        );
+        if (dbOutput.rows.length === 0) {
+          return Promise.reject({ status: 404, msg: "Comment not found" });
+        } else {
+            return true
+        }
+      };
+    
   
 
-module.exports = {selectCommentsByArticleId,insertCommentByArticleId, checkArticleExists}
+module.exports = {selectCommentsByArticleId,insertCommentByArticleId, checkArticleExists, deleteComment}

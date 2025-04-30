@@ -1,5 +1,5 @@
 const db = require("../../db/connection")
-const {checkArticleExists} = require("./comments.model")
+const checkArticleExists = require("./comments.model")
 
 const selectArticleById = (article_id) => {
    return db
@@ -11,11 +11,36 @@ const selectArticleById = (article_id) => {
                 msg: "Not Found"
             })
         } else {
-        return result.rows
+        return result.rows[0]
      };
     });
 };
 
+const updateArticleVotes = (article_id, inc_votes) => {
+    const article_id_num = Number(article_id)
+    if(isNaN(article_id_num)){
+        return Promise.reject({status: 400, msg: "Bad request"})
+    }
+
+    if (inc_votes === undefined) {
+        return Promise.reject({ status: 400, msg: "Missing required fields" });
+      }
+
+    if(typeof inc_votes !== "number"){
+        return Promise.reject({status:400, msg: "Bad request"})
+    }
+   return checkArticleExists(article_id_num)
+    .then(() => {
+    return db.query(`UPDATE articles
+        SET votes = votes + $1
+        WHERE article_id = $2
+        RETURNING *;`, [inc_votes, article_id_num])
+        .then(({rows}) => {
+             return rows[0];
+            })
+              
+         });
+    };
 const selectArticles = () => {
     return db
     .query(`SELECT articles.title, articles.article_id, articles.topic, articles.author, articles.created_at, articles.votes, 
@@ -30,40 +55,11 @@ const selectArticles = () => {
     })
  }
 
- const updateArticleVotes = (article_id, inc_votes) => {
-    
-    const article_id_num = Number(article_id)
-    if(isNaN(article_id_num)){
-        return Promise.reject({status: 400, msg: "Bad request"})
-    }
-    if(!article_id || inc_votes === undefined){
-        return Promise.reject({status:400, msg:"Missing required fields"})
-    }
-    if(typeof inc_votes !== "number" || isNaN(article_id_num) ){
-        return Promise.reject({status:400, msg: "Bad request"})
-    }
-   return checkArticleExists(article_id)
-    .then(() => {
-    return db.query(`UPDATE articles
-        SET votes = votes + $1
-        WHERE article_id = $2
-        RETURNING *;`, [inc_votes, article_id])
-        .then((result) => {
-             return result.rows[0];
-            })
-              
-         });
-    };
  
 
 
-      
-
-
- 
-
-
-
-
-
-module.exports = {selectArticleById, selectArticles, updateArticleVotes}
+module.exports = {
+    selectArticleById, 
+    selectArticles, 
+    updateArticleVotes
+}
