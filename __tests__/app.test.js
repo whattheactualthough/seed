@@ -94,6 +94,72 @@ describe("GET /api/articles", () => {
       });
     });
   });
+  const sortByGreenList = [
+    'article_id', 
+    'title', 
+    'topic', 
+    'author',  
+    'created_at', 
+    'votes', 
+   ]
+  // use forEach to sort_by each column value?
+   describe("GET /api/articles?sort_by=value&order=value", () => {
+    sortByGreenList.forEach((column) => {
+    test("200: responds with articles sorted by given value, defaults to SORT BY ${column} DESC" , () => {
+      return request(app)
+      .get(`/api/articles?sort_by=${column}&order=DESC`)
+      .expect(200)
+      .then(({body}) => {
+        console.log(body)
+        expect(body.articles.length).toBeGreaterThan(0)
+        expect(body.articles).toBeSortedBy(column, {descending: true})
+      });
+     });
+    });
+    sortByGreenList.forEach((column) => {
+    test("200: responds with articles sorted by given value, SORT BY ${column} ASC" , () => {
+      return request(app)
+      .get(`/api/articles?sort_by=${column}&order=ASC`)
+      .expect(200)
+      .then(({body}) => {
+        expect(body.articles.length).toBeGreaterThan(0)
+        expect(body.articles).toBeSortedBy(column, { ascending: true })
+      })
+    });
+  });
+  test("200: when given no sort_by value articles array is sorted by created_at as default", () => {
+    return request(app)
+    .get("/api/articles")
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles).toBeSortedBy("created_at", {descending: true})
+    })
+  })
+  test("200: responds with array of article objects sorted by given value DESC as default order", () => {
+    return request(app)
+    .get("/api/articles?sort_by=topic")
+    .expect(200)
+    .then(({body}) => {
+      expect(body.articles).toBeSortedBy("topic", {descending: true})
+    })
+  })
+  test("400: responds with Invalid sort by query", () => {
+    return request(app)
+    .get("/api/articles?sort_by=notAColumn")
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Invalid sort by value")
+    })
+  })
+  test("400: responds with Invalid order value", () => {
+    return request(app)
+    .get("/api/articles?sort_by=topic&order=notAnOrder")
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe("Invalid order value")
+    })
+    })
+  })
  });
 
  describe("GET api/articles/:article_id/comments", () => {
@@ -203,7 +269,7 @@ describe("GET /api/articles", () => {
     })
   });
 
-  describe.only("PATCH /api/articles/:article_id", () => {
+  describe("PATCH /api/articles/:article_id", () => {
     test("200: responds with updated article", () => {
     const testPatch = {inc_votes: 10};
     return request(app)
@@ -299,72 +365,7 @@ describe("GET /api/articles", () => {
  });
 
 
- const sortByGreenList = [
-  'article_id', 
-  'title', 
-  'topic', 
-  'author',  
-  'created_at', 
-  'votes', 
- ]
-// use forEach to sort_by each column value?
- describe("GET /api/articles?sort_by=value&order=value", () => {
-  sortByGreenList.forEach((column) => {
-  test("200: responds with articles sorted by given value, defaults to SORT BY ${column} DESC" , () => {
-    return request(app)
-    .get(`/api/articles?sort_by=${column}&order=DESC`)
-    .expect(200)
-    .then(({body}) => {
-      console.log(body)
-      expect(body.articles.length).toBeGreaterThan(0)
-      expect(body.articles).toBeSortedBy(column, {descending: true})
-    });
-   });
-  });
-  sortByGreenList.forEach((column) => {
-  test("200: responds with articles sorted by given value, SORT BY ${column} ASC" , () => {
-    return request(app)
-    .get(`/api/articles?sort_by=${column}&order=ASC`)
-    .expect(200)
-    .then(({body}) => {
-      expect(body.articles.length).toBeGreaterThan(0)
-      expect(body.articles).toBeSortedBy(column, { ascending: true })
-    })
-  });
-});
-test("200: when given no sort_by value articles array is sorted by created_at as default", () => {
-  return request(app)
-  .get("/api/articles")
-  .expect(200)
-  .then(({body}) => {
-    expect(body.articles).toBeSortedBy("created_at", {descending: true})
-  })
-})
-test("200: responds with array of article objects sorted by given value DESC as default order", () => {
-  return request(app)
-  .get("/api/articles?sort_by=topic")
-  .expect(200)
-  .then(({body}) => {
-    expect(body.articles).toBeSortedBy("topic", {descending: true})
-  })
-})
-test("400: responds with Invalid sort by query", () => {
-  return request(app)
-  .get("/api/articles?sort_by=notAColumn")
-  .expect(400)
-  .then(({body}) => {
-    expect(body.msg).toBe("Invalid sort by value")
-  })
-})
-test("400: responds with Invalid order value", () => {
-  return request(app)
-  .get("/api/articles?sort_by=topic&order=notAnOrder")
-  .expect(400)
-  .then(({body}) => {
-    expect(body.msg).toBe("Invalid order value")
-  })
-  })
-})
+ 
 
 
  
