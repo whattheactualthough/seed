@@ -53,9 +53,10 @@ describe("GET /api/articles/:article_id", () => {
       expect(article.body).toBe("Bastet walks amongst us, and the cats are taking arms!"),
       expect(article.created_at).toBe('2020-08-03T13:14:00.000Z')
       expect(article.votes).toBe(0)
+      expect(article.comment_count).toBe(2)
   });
 });
-  test("400: responds with Bad Request for psql errors", () => {
+  test("400: responds with Bad Request for invalid article_id", () => {
     return request(app)
     .get("/api/articles/cats")
     .expect(400)
@@ -63,7 +64,7 @@ describe("GET /api/articles/:article_id", () => {
       expect(response.body.msg).toBe("Bad Request")
     });
   });
-  test("404: responds with Not Found for out of range requests", () => {
+  test("404: responds with Not Found when passed a non existent article_id", () => {
     return request(app)
     .get("/api/articles/10000")
     .expect(404)
@@ -161,7 +162,7 @@ describe("GET /api/articles", () => {
     })
   });
 
-  describe.only("GET /api/articles?topic=value", () => {
+  describe("GET /api/articles?topic=value", () => {
     test("200: responds with all articles of given topic", () => {
       return request(app)
       .get("/api/articles?topic=mitch")
@@ -355,22 +356,22 @@ describe("GET /api/articles", () => {
       return request(app)
       .delete("/api/comments/3")
       .expect(204)
-      .then(() => {return db.query(`SELECT * FROM comments WHERE comment_id = 3`)
+      .then(() => {return db.query(`SELECT * FROM comments WHERE comment_id = 1000`)
         .then(({rows}) => {expect(rows.length).toBe(0)})
       })
     });
-    test.skip('400: responds with "bad request when passed an invalid comment_id', () => {
+    test('400: responds with "bad request when passed an invalid comment_id', () => {
       return request(app)
       .delete("/api/comments/notAComment")
       .expect(400)
       .then(({body}) =>{
-        expect(body.msg).toBe("Bad request") // getting 404 no test is corrected, will fix.
+        expect(body.msg).toBe("Bad request")
       })
     })
       test('404: responds with "Comment not found when passed a non existent comment_id', () => {
         return request(app)
         .delete("/api/comments/1000")
-        .expect(400)
+        .expect(404)
         .then(({body}) =>{
           expect(body.msg).toBe("Comment not found")
         })

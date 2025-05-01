@@ -3,7 +3,28 @@ const {checkArticleExists} = require("./utils")
 
 const selectArticleById = (article_id) => {
    return db
-   .query(`SELECT * FROM articles WHERE article_id = $1`, [article_id])
+   .query(`SELECT 
+    articles.article_id,
+    articles.title, 
+    articles.topic, 
+    articles.author, 
+    articles.body,
+    articles.created_at,
+    articles.votes,
+    COUNT(comments.article_id)::INT 
+        AS comment_count 
+        FROM articles 
+        LEFT JOIN comments 
+        ON articles.article_id = comments.article_id 
+    WHERE articles.article_id = $1
+    GROUP BY 
+    articles.article_id,
+    articles.title, 
+    articles.topic, 
+    articles.author, 
+    articles.body,
+    articles.created_at,
+    articles.votes;`, [article_id])
     .then((result) => {
         if(result.rows.length === 0){
             return Promise.reject({
@@ -71,32 +92,23 @@ const selectArticles = (sort_by, order, topic) => {
     }
 
     queryStr += ` GROUP BY articles.article_id,  articles.title, articles.topic, articles.author, articles.created_at, articles.votes`
+   
+    if (sort_by) {
+        queryStr += ` ORDER BY articles.${sort_by} ${order || 'DESC'}`;
+    } else {
+        queryStr += ` ORDER BY articles.created_at DESC`;
+    }
 
-    if (!sort_by) {
-        queryStr += ` ORDER BY articles.created_at`;
-
-      } else {
-        queryStr += ` ORDER BY $${queryArgs.length+1}`;
-        queryArgs.push(sort_by)
-      }
-  
-      if (!order) {
-        queryStr += ` DESC`;
-
-      } else {
-        queryStr += ` $${queryArgs.length+1}`;
-        queryArgs.push(order.toUpperCase())
-      };
-
+      console.log(queryStr)
     return db.query(queryStr, queryArgs)
     .then(({rows}) => {
-        console.log(rows)
+ 
         if (rows.length === 0){
             return Promise.reject({
                 status: 404, 
                 msg: "Article not found"})
         }
-
+    
         return rows;
     })
 };
