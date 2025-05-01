@@ -12,13 +12,15 @@ const getArticleById = (req, res, next) => {
 };
 
 const getArticles = (req, res, next) => {
-    selectArticles()
+    const {sort_by} = req.query;
+    const {order} = req.query;
+    selectArticles(sort_by, order)
     .then((articles) => {
         res.status(200)
         .send({articles})
     })
     .catch((err) => {
-        next(err)
+        next(err);
     });
  };
 

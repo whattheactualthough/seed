@@ -1,5 +1,6 @@
 const db = require("../../db/connection")
 const checkArticleExists = require("./comments.model")
+const checkColumnExists = require("./utils")
 
 const selectArticleById = (article_id) => {
    return db
@@ -15,6 +16,63 @@ const selectArticleById = (article_id) => {
      };
     });
 };
+
+const selectArticles = (sort_by, order) => {
+
+    const orderGreenList = [
+        'ASC', 
+        'DESC'];
+
+    const sortByGreenList = [
+        'article_id', 
+        'title', 
+        'topic', 
+        'author', 
+        'created_at', 
+        'votes'];
+    
+    if(sort_by && !sortByGreenList.includes(sort_by)){
+        return Promise.reject({status: 400, msg: "Invalid sort by value"})
+    };
+
+    if(order && !orderGreenList.includes(order.toUpperCase())){
+        return Promise.reject({status:400, msg: "Invalid order value"});
+    };
+
+    let queryStr = `SELECT articles.title, 
+    articles.article_id, 
+    articles.topic, 
+    articles.author, 
+    articles.created_at, articles.votes,
+    COUNT(comments.article_id)::INT 
+    AS comment_count 
+    FROM articles 
+    LEFT JOIN comments 
+    ON articles.article_id = comments.article_id 
+    GROUP BY articles.article_id ORDER BY`
+
+    
+    if (!sort_by) {
+        queryStr += ` articles.created_at`;
+
+      } else {
+        queryStr += ` ${sort_by}`;
+      };
+  
+      if (!order) {
+        queryStr += ` DESC;`;
+
+      } else {
+        queryStr += ` ${order.toUpperCase()};`;
+      };
+
+    return db.query(queryStr)
+    .then(({rows}) => {
+        return rows;
+    });
+};
+
+ 
 
 const updateArticleVotes = (article_id, inc_votes) => {
     const article_id_num = Number(article_id)
@@ -41,19 +99,6 @@ const updateArticleVotes = (article_id, inc_votes) => {
               
          });
     };
-const selectArticles = () => {
-    return db
-    .query(`SELECT articles.title, articles.article_id, articles.topic, articles.author, articles.created_at, articles.votes, 
-    COUNT(comments.article_id)::INT
-    AS comment_count
-    FROM articles 
-    LEFT JOIN comments 
-     ON articles.article_id = comments.article_id GROUP BY articles.article_id 
-    ORDER BY articles.created_at;`)
-    .then((result) => {
-        return result.rows
-    })
- }
 
  
 
