@@ -1,4 +1,3 @@
-const app = require("./app.js")
 const app = require("./app.js");
 const { PORT = 7070 } = process.env;
 
