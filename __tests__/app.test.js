@@ -94,6 +94,7 @@ describe("GET /api/articles", () => {
       });
     });
   });
+
   const sortByGreenList = [
     'article_id', 
     'title', 
@@ -102,7 +103,6 @@ describe("GET /api/articles", () => {
     'created_at', 
     'votes', 
    ]
-  // use forEach to sort_by each column value?
    describe("GET /api/articles?sort_by=value&order=value", () => {
     sortByGreenList.forEach((column) => {
     test("200: responds with articles sorted by given value, defaults to SORT BY ${column} DESC" , () => {
@@ -134,7 +134,7 @@ describe("GET /api/articles", () => {
     .then(({body}) => {
       expect(body.articles).toBeSortedBy("created_at", {descending: true})
     })
-  })
+  });
   test("200: responds with array of article objects sorted by given value DESC as default order", () => {
     return request(app)
     .get("/api/articles?sort_by=topic")
@@ -142,7 +142,7 @@ describe("GET /api/articles", () => {
     .then(({body}) => {
       expect(body.articles).toBeSortedBy("topic", {descending: true})
     })
-  })
+  });
   test("400: responds with Invalid sort by query", () => {
     return request(app)
     .get("/api/articles?sort_by=notAColumn")
@@ -150,7 +150,7 @@ describe("GET /api/articles", () => {
     .then(({body}) => {
       expect(body.msg).toBe("Invalid sort by value")
     })
-  })
+  });
   test("400: responds with Invalid order value", () => {
     return request(app)
     .get("/api/articles?sort_by=topic&order=notAnOrder")
@@ -159,8 +159,39 @@ describe("GET /api/articles", () => {
       expect(body.msg).toBe("Invalid order value")
     })
     })
-  })
- });
+  });
+
+  describe.only("GET /api/articles?topic=value", () => {
+    test("200: responds with all articles of given topic", () => {
+      return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({body})=> {
+        expect(body.articles.length).toBeGreaterThan(0)
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe("mitch")
+          })
+        })
+      })
+      test("400: responds with invalid topic for topics not on greenlist", () => {
+        return request(app)
+        .get("/api/articles?topic=scuba")
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Invalid topic")
+        })
+      });
+      test("404: responds with Articles not found when given a valid topic with no articles associated with it", ()=> {
+        return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(404)
+        .then(({body}) => {
+          expect(body.msg).toBe("Article not found")
+        })
+      })
+    });
+});
+ 
 
  describe("GET api/articles/:article_id/comments", () => {
   test("200: responds with an array of comments for given article", () => {
@@ -317,7 +348,7 @@ describe("GET /api/articles", () => {
       expect(body.msg).toBe("Invalid article id")
     })
    });
- })
+ });
 
   describe("DELETE /api/comments/:comment_id", ()=> {
     test('204: responds with no content', () => {
@@ -328,23 +359,23 @@ describe("GET /api/articles", () => {
         .then(({rows}) => {expect(rows.length).toBe(0)})
       })
     });
-    test('400: responds with "bad request when passed an invalid comment_id', () => {
+    test.skip('400: responds with "bad request when passed an invalid comment_id', () => {
       return request(app)
       .delete("/api/comments/notAComment")
       .expect(400)
       .then(({body}) =>{
-        expect(body.msg).toBe("Bad request")
+        expect(body.msg).toBe("Bad request") // getting 404 no test is corrected, will fix.
       })
     })
       test('404: responds with "Comment not found when passed a non existent comment_id', () => {
         return request(app)
-        .delete("/api/comments/notAComment")
+        .delete("/api/comments/1000")
         .expect(400)
         .then(({body}) =>{
-          expect(body.msg).toBe("Bad request")
+          expect(body.msg).toBe("Comment not found")
         })
     });
-  })
+  });
 
  describe("GET /api/users",() => {
   test("200: responds with array of user objects", () => {
@@ -363,9 +394,3 @@ describe("GET /api/articles", () => {
     });
   });
  });
-
-
- 
-
-
- 

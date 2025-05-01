@@ -1,24 +1,52 @@
 const db = require("../../db/connection");
 
-const checkColumnExists = async (table_name, column_name) => {
-    const query = `SELECT 1 
-    FROM information_schema.columns 
-    WHERE table_name = $1 
-    AND column_name = $2 
-    LIMIT 1;`;
-  
-    const result = await pool.query(query, [table_name, column_name]);
-  
-    if (result.rows.length === 0) {
-      return Promise.reject({ 
-        status: 400, 
-        msg: "Bad request" });
-    }
-  
-    return true;
-  };
+const checkCommentExists = async (comment_id) => {
+    const dbOutput = await db.query(
+        `SELECT * FROM comments WHERE comments.comment_id = $1;`,
+        [comment_id]
+      );
+      if (dbOutput.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Comment not found" });
+      } else {
+          return true
+      }
+    };
+
+    const checkUserExists = async (user) => {
+        const dbOutput = await db.query(
+          `SELECT * FROM users WHERE users.username = $1;`,
+          [user]
+        );
+        if (dbOutput.rows.length === 0) {
+          return Promise.reject({ status: 404, msg: "User not found" });
+        } else {
+            return true
+        }
+      };
+
+      const checkArticleExists = async (article_id) => {
+        const { rows } = await db.query(`
+          SELECT * FROM articles 
+          WHERE articles.article_id = $1;`,
+          [article_id]);
+      
+        if (rows.length === 0) {
+          throw{ 
+            status: 404, 
+            msg: "Article not found" };
+        }
+      
+        return true;
+      };
+
+    //   const checkDataExists = async (data_id, table) => {
+    //     const dataToCheckFor = data_id
+    //     const tableToCheck = table
+    //     const {rows} = await db.query(`
+    //         SELECT * FROM ${tableToCheck} WHERE `)
+    //   }
+    
 
 
 
-
-module.exports = {checkColumnExists}
+module.exports = { checkCommentExists, checkUserExists, checkArticleExists}
