@@ -1,7 +1,7 @@
 const request = require("supertest");
 const data = require("../db/data/test-data");
 const db = require("../db/connection")
-const app = require("../app");
+const app = require("../api");
 const endpointsJson = require("../endpoints.json");
 const seed = require("../db/seeds/seed")
 
