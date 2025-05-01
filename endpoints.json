@@ -10,7 +10,11 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an object articles array",
+    "description": "serves an object articles array, sorted by ",
+    "queries": {"sort_by" : 
+    ["article_id", "title", "topic", "author", "created_at", "votes"],
+    "order" : ["ASC, DESC"]
+  },
     "exampleResponse": {
       "articles": [
         {
