@@ -203,7 +203,7 @@ describe("GET /api/articles", () => {
     })
   });
 
-  describe.skip("PATCH /api/articles/:article_id", () => {
+  describe.only("PATCH /api/articles/:article_id", () => {
     test("200: responds with updated article", () => {
     const testPatch = {inc_votes: 10};
     return request(app)
@@ -248,7 +248,7 @@ describe("GET /api/articles", () => {
     .send({inc_vote:5})
     .expect(400)
     .then(({body}) => {
-      expect(body.msg).toBe("Bad request")
+      expect(body.msg).toBe("Invalid article id")
     })
    });
  })

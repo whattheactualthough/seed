@@ -55,16 +55,19 @@ const checkUserExists = async (user) => {
   };
 
   const checkArticleExists = async (article_id) => {
-    const dbOutput = await db.query(
-        `SELECT * FROM articles WHERE articles.article_id = $1;`,
-        [article_id]
-      );
-      if (dbOutput.rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Article not found" });
-      } else {
-          return true
-      }
-    };
+    const { rows } = await db.query(`
+      SELECT * FROM articles 
+      WHERE articles.article_id = $1;`,
+      [article_id]);
+  
+    if (rows.length === 0) {
+      throw{ 
+        status: 404, 
+        msg: "Article not found" };
+    }
+  
+    return true;
+  };
 
     const checkCommentExists = async (comment_id) => {
       const dbOutput = await db.query(
@@ -80,5 +83,8 @@ const checkUserExists = async (user) => {
     
   
 
-module.exports = {selectCommentsByArticleId,insertCommentByArticleId, checkArticleExists, 
-deleteComment}
+module.exports = {
+  selectCommentsByArticleId,
+  insertCommentByArticleId, 
+  checkArticleExists, 
+  deleteComment}

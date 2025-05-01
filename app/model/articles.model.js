@@ -1,5 +1,5 @@
 const db = require("../../db/connection")
-const checkArticleExists = require("./comments.model")
+const {checkArticleExists} = require("./comments.model")
 const checkColumnExists = require("./utils")
 
 const selectArticleById = (article_id) => {
@@ -57,7 +57,7 @@ const selectArticles = (sort_by, order) => {
 
       } else {
         queryStr += ` ${sort_by}`;
-      };
+      }
   
       if (!order) {
         queryStr += ` DESC;`;
@@ -69,33 +69,38 @@ const selectArticles = (sort_by, order) => {
     return db.query(queryStr)
     .then(({rows}) => {
         return rows;
-    });
+    })
 };
 
  
 
 const updateArticleVotes = (article_id, inc_votes) => {
-    const article_id_num = Number(article_id)
-    if(isNaN(article_id_num)){
-        return Promise.reject({status: 400, msg: "Bad request"})
+    // if i cant turn it to a number with parseint then reject - invalid input. if i can check article exists etc
+
+    const article_id_num = parseInt(article_id)
+
+    if(isNaN(article_id)){
+        return Promise.reject({status: 400, msg: "Invalid article id"})
+   
     }
 
     if (inc_votes === undefined) {
         return Promise.reject({ status: 400, msg: "Missing required fields" });
-      }
+      };
 
     if(typeof inc_votes !== "number"){
         return Promise.reject({status:400, msg: "Bad request"})
-    }
+    };
    return checkArticleExists(article_id_num)
     .then(() => {
+        console.log("hi from after cae")
     return db.query(`UPDATE articles
         SET votes = votes + $1
         WHERE article_id = $2
         RETURNING *;`, [inc_votes, article_id_num])
         .then(({rows}) => {
              return rows[0];
-            })
+            });
               
          });
     };
