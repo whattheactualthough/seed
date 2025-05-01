@@ -32,7 +32,7 @@ const insertCommentByArticleId = (commentBody, userName, article_id) => {
 }
 
 const deleteComment = (comment_id) => {
- 
+ console.log(comment_id)
   const comment_id_num = Number(comment_id)
   if(isNaN(comment_id_num)){
       return Promise.reject({status: 400, msg: "Bad request"})
