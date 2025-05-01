@@ -14,7 +14,8 @@ const getArticleById = (req, res, next) => {
 const getArticles = (req, res, next) => {
     const {sort_by} = req.query;
     const {order} = req.query;
-    selectArticles(sort_by, order)
+    const {topic} = req.query;
+    selectArticles(sort_by, order, topic)
     .then((articles) => {
         res.status(200)
         .send({articles})
@@ -27,7 +28,6 @@ const getArticles = (req, res, next) => {
  const patchArticleByArticleId = (req, res, next) => {
     const {article_id} = req.params;
     const {inc_votes} = req.body
-    console.log(article_id, inc_votes)
     updateArticleVotes(article_id, inc_votes)
     .then((article) =>{
         res.status(200)
