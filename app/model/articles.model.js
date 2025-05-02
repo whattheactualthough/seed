@@ -18,13 +18,7 @@ const selectArticleById = (article_id) => {
         ON articles.article_id = comments.article_id 
     WHERE articles.article_id = $1
     GROUP BY 
-    articles.article_id,
-    articles.title, 
-    articles.topic, 
-    articles.author, 
-    articles.body,
-    articles.created_at,
-    articles.votes;`, [article_id])
+    articles.article_id;`, [article_id])
     .then((result) => {
         if(result.rows.length === 0){
             return Promise.reject({
@@ -91,7 +85,7 @@ const selectArticles = (sort_by, order, topic) => {
         queryArgs.push(topic)
     }
 
-    queryStr += ` GROUP BY articles.article_id,  articles.title, articles.topic, articles.author, articles.created_at, articles.votes`
+    queryStr += ` GROUP BY articles.article_id`
    
     if (sort_by) {
         queryStr += ` ORDER BY articles.${sort_by} ${order || 'DESC'}`;

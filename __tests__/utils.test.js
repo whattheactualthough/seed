@@ -41,7 +41,7 @@ describe("convertTimestampToDate", () => {
   });
 });
 
-describe.only('createRefObject', () => {
+describe('createRefObject', () => {
   test('returns an empty object when passed an empty array', () => {
     const input = [];
     const result = createRef(input);

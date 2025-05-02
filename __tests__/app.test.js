@@ -53,9 +53,15 @@ describe("GET /api/articles/:article_id", () => {
       expect(article.body).toBe("Bastet walks amongst us, and the cats are taking arms!"),
       expect(article.created_at).toBe('2020-08-03T13:14:00.000Z')
       expect(article.votes).toBe(0)
-      expect(article.comment_count).toBe(2)
-  });
+  })
 });
+  test("200: returned article has comment_count key showing total number of comments", () => {
+    return request(app)
+    .get("/api/articles/5")
+    .then(({body}) => {
+      expect(body.article.comment_count).toBe(2)
+    })
+  })
   test("400: responds with Bad Request for invalid article_id", () => {
     return request(app)
     .get("/api/articles/cats")
