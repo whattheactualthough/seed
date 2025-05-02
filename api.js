@@ -6,7 +6,7 @@ const topicsRouter = require("./routes/topics.router");
 const articlesRouter = require("./routes/articles.router");
 const commentsRouter = require("./routes/comments.router");
 app.use(express.json());
-const {errorHandler} = require("./errors/errorHandling")
+const errorHandler = require("./errors/errorHandling")
 
 app.use("/api", apiRouter); //is this app?
 apiRouter.use('/users', usersRouter);
