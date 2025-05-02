@@ -48,7 +48,6 @@ npm run seed
 In your terminal run
 `npm t `
 
-
 # Minimum versions:
 Node.js v23.9.0.
 psql (PostgreSQL) 14.17 (Homebrew)

@@ -1,48 +1,20 @@
 const express = require("express");
 const app = express();
-const {getApi} = require("./app/controller/api.controller")
-const {getTopics} = require("./app/controller/topics.controller")
-const {getArticleById, getArticles, patchArticleByArticleId} = require("./app/controller/articles.controller")
-const {getCommentsByArticleId, postCommentByArticleId, deleteCommentByCommentId} = require("./app/controller/comments.controller")
-
-const {getUsers} = require("./app/controller/users.controller")
-
-
+const apiRouter = require("./routes/api.router");
+const usersRouter = require("./routes/users.router");
+const topicsRouter = require("./routes/topics.router");
+const articlesRouter = require("./routes/articles.router");
+const commentsRouter = require("./routes/comments.router");
 app.use(express.json());
+const errorHandler = require("./errors/errorHandling")
 
-app.get("/api", getApi);
+app.use("/api", apiRouter); //is this app?
+apiRouter.use('/users', usersRouter);
+apiRouter.use('/topics', topicsRouter);
+apiRouter.use('/articles', articlesRouter);
+apiRouter.use('/comments', commentsRouter)
 
-app.get("/api/topics", getTopics);
-
-app.get("/api/articles/:article_id", getArticleById);
-
-app.get("/api/articles", getArticles);
-
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId)
-
-app.get("/api/users", getUsers)
-
-app.post("/api/articles/:article_id/comments", postCommentByArticleId)
-
-app.patch("/api/articles/:article_id", patchArticleByArticleId)
-
-app.delete("/api/comments/:comment_id", deleteCommentByCommentId)
-
-
-app.use((err, req, res, next)=> {
-    if(err.code === "22P02"){
-        res.status(400)
-        .send({msg: "Bad Request"})
-    } else if(err.status && err.msg){
-        res.status(err.status)
-        .send({msg: err.msg})
-    }
-    else {
-        console.log(err)
-        res.status(500)
-    .send({msg: "Internal Server Error"})
-    }
-    });
+app.use(errorHandler)
 
 
 module.exports = app;
