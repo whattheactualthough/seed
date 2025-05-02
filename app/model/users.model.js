@@ -1,5 +1,4 @@
 const db = require("../../db/connection")
-const {checkUserExists, checkArticleExists} = require("./utils")
 
 const selectUsers = () => {
     return db.query(`SELECT username, name, avatar_url FROM users`)

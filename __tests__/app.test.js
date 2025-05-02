@@ -421,3 +421,57 @@ describe("GET /api/articles", () => {
     })
   });
 });
+
+describe('PATCH: /api/comments/:comment_id', () => {
+  test('200: responds with updated comment', () => {
+    const testPatch = {inc_votes: 10}
+    return request(app)
+    .patch("/api/comments/2")
+    .send(testPatch)
+    .expect(200)
+    .then(({body}) => {
+      const comment = body.comment
+      expect(comment.article_id).toBe(1)
+      expect(comment.comment_id).toBe(2)
+      expect(comment.votes).toBe(24) // from 14
+      expect(comment.author).toBe("butter_bridge")
+      expect(comment.created_at).toBe("2020-10-31T03:03:00.000Z")
+    })
+  });
+  test("400: responds with Missing required field when passed an empty object", () => {
+  return request(app)
+  .patch("/api/comments/2")
+  .send({})
+  .expect(400)
+  .then((response) => {
+    expect(response.body.msg).toBe("Missing required fields")
+  })
+ });
+  test("400: responds with Bad request when passed invalid value as inc_votes", () => {
+  return request(app)
+  .patch("/api/comments/2")
+  .send({inc_votes: "notANumber"})
+  .expect(400)
+  .then((response) => {
+    expect(response.body.msg).toBe("Bad request")
+  })
+ });
+  test('404: responds with Comment not found when passed a non existent comment_id', () => {
+  return request(app)
+  .patch("/api/comments/1000")
+  .send({inc_votes: 5})
+  .expect(404)
+  .then(({body}) => {
+    expect(body.msg).toBe("Comment not found")
+  })
+ });
+   test('400: responds with Bad request when passed an invalid comment_id', () => {
+  return request(app)
+  .patch("/api/comments/notAComment")
+  .send({inc_vote:5})
+  .expect(400)
+  .then(({body}) => {
+    expect(body.msg).toBe("Invalid comment id")
+  })
+ });
+})
