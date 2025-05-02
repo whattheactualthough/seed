@@ -117,7 +117,6 @@ describe("GET /api/articles", () => {
       .get(`/api/articles?sort_by=${column}&order=DESC`)
       .expect(200)
       .then(({body}) => {
-        console.log(body)
         expect(body.articles.length).toBeGreaterThan(0)
         expect(body.articles).toBeSortedBy(column, {descending: true})
       });
@@ -401,3 +400,24 @@ describe("GET /api/articles", () => {
     });
   });
  });
+
+ describe('GET /api/users/:username', () => {
+  test('200: returns user by username', () => {
+    return request(app)
+    .get("/api/users/butter_bridge")
+    .expect(200)
+    .then(({body}) => {
+      expect(body.user.username).toBe("butter_bridge")
+      expect(body.user.avatar_url).toBe("https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg")
+      expect(body.user.name).toBe("jonny")
+    })
+  });
+  test('404 responds with Nonexistent user', () => {
+    return request(app)
+    .get("/api/users/not_a-user")
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("User not found")
+    })
+  });
+});

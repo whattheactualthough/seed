@@ -7,7 +7,6 @@ function errorHandler(err, req, res, next){
         .send({msg: err.msg})
     }
     else {
-        console.log(err)
         res.status(500)
     .send({msg: "Internal Server Error"})
     }
