@@ -101,6 +101,12 @@
       "name": "jonny",
       "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
     }
+  },
+  "PATCH : /api/comments/:comment_id": {
+    "description": "responds with updated comment",
+    "queries": ["comment_id"],
+    "example input": {"inc_votes": 10},
+    "exampleResponse": {}
   }
 }
 
