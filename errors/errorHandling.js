@@ -2,7 +2,12 @@ function errorHandler(err, req, res, next){
     if(err.code === "22P02"){
         res.status(400)
         .send({msg: "Bad Request"})
-    } else if(err.status && err.msg){
+    } 
+    if(err.code === "23505"){
+        console.log(err)
+        res.status(400)
+        .send("Invalid input")
+        }else if(err.status && err.msg){
         res.status(err.status)
         .send({msg: err.msg})
     }

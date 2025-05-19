@@ -50,8 +50,8 @@ const deleteComment = (comment_id) => {
               }
               return rows[0];
       });
-    });
-  };
+    })
+  }
 
 module.exports = {
   deleteComment,

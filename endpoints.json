@@ -106,7 +106,14 @@
     "description": "responds with updated comment",
     "queries": ["comment_id"],
     "example input": {"inc_votes": 10},
-    "exampleResponse": {}
+    "exampleResponse": {
+      "comment_id": 2,
+      "article_id": 1,
+      "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+      "votes": 24,
+      "author": "butter_bridge",
+      "created_at": "2020-10-31T03:03:00.000Z"
+    }
   }
 }
 

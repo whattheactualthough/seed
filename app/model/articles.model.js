@@ -165,6 +165,54 @@ const updateArticleVotes = (article_id, inc_votes) => {
         }) 
         }) 
     }
+
+    const insertArticle = (title, topic, author, body, article_img_url) => {
+        
+        if(author === undefined || title === undefined || body === undefined || topic === undefined){
+            return Promise.reject({
+                status: 400,
+                msg: "Missing required fields"
+            })
+        }
+
+        if(typeof title !== "string"||
+            typeof body !== "string"||
+            typeof author !== "string"
+        ){
+            return Promise.reject({
+                status: 400,
+                msg: "Invalid input"
+            })
+        }
+        const topicGreenList = [
+        "mitch",
+        "cats",
+        "paper"
+        ]
+        
+        if(topic && !topicGreenList.includes(topic)){
+            return Promise.reject({
+                status: 400,
+                msg: "Invalid topic"
+            })
+        }
+
+        const authorGreenList = ["lurker", "butter_bridge", "icedlluskars", "rogersop"]
+
+        if(author && !authorGreenList.includes(author)){
+            return Promise.reject({
+                status: 400,
+                msg: "Invalid author"
+            })
+        }
+
+        return db.query(`
+            INSERT INTO articles (title, topic, author, body, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`, [title, topic, author, body, article_img_url])
+
+        .then(({rows}) => {
+            return rows[0]
+        })
+    }
      
 
  
@@ -175,5 +223,6 @@ module.exports = {
     selectArticles, 
     updateArticleVotes, 
     selectCommentsByArticleId, 
-    insertCommentByArticleId
+    insertCommentByArticleId,
+    insertArticle
 }
