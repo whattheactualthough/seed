@@ -11,7 +11,7 @@ const selectArticleById = (article_id) => {
     articles.body,
     articles.created_at,
     articles.votes,
-    articlrs.article_img_url,
+    articles.article_img_url,
     COUNT(comments.article_id)::INT 
         AS comment_count 
         FROM articles 
