@@ -45,9 +45,22 @@ const checkCommentExists = async (comment_id) => {
       
         return true;
       };
+
+      const fetchTopics = (topic) => {
+        return db.query('SELECT * FROM topics WHERE topics.slug = $1', [topic]).then(({ rows }) => {
+          console.log(rows)
+          if(rows.length === 0){
+           return Promise.reject({
+            status: 404,
+            msg: "Topic does not exist"
+           })
+          }
+        });
+      };
     
 
 module.exports = { 
   checkCommentExists, 
   checkUserExists, 
-  checkArticleExists}
+  checkArticleExists,
+fetchTopics}

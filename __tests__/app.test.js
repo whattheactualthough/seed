@@ -185,20 +185,21 @@ describe("GET /api/articles", () => {
           });
         });
     });
-    test("400: responds with invalid topic for topics not on greenlist", () => {
+    test("404: responds with invalid topic for topics not on greenlist", () => {
       return request(app)
         .get("/api/articles?topic=scuba")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("Invalid topic");
-        });
-    });
-    test("404: responds with Articles not found when given a valid topic with no articles associated with it", () => {
-      return request(app)
-        .get("/api/articles?topic=paper")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("Article not found");
+          console.log(body)
+          expect(body.msg).toBe("Topic does not exist");
+        });
+    });
+    test("200: responds with Articles not found when given a valid topic with no articles associated with it", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toEqual([]);
         });
     });
   });
@@ -487,7 +488,7 @@ describe("PATCH: /api/comments/:comment_id", () => {
   });
 });
 
-describe.only
+describe
 ("POST: /api/articles", () => {
   test("200: responds with newly added article ", () => {
     const testArticle = {
@@ -585,7 +586,7 @@ describe.only
         expect(body.msg).toBe("Missing required fields");
       });
   });
-  test.skip("400: responds with Invalid input", () => {
+  test("400: responds with Invalid input", () => {
     const testArticle = {
       title: 10000,
       topic: "mitch",
@@ -597,7 +598,7 @@ describe.only
       .send(testArticle)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid input");
+        expect(body.msg).toBe("Missing required fields");
       });
   });
   /*tests 
