@@ -8,7 +8,6 @@ const selectUsers = () => {
 }
 
 const selectUserByUsername = (username) => {
-    console.log(typeof username)
     if(typeof username !== "string" || !username.trim()){
         return Promise.reject({
             status:400, 

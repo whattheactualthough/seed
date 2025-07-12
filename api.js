@@ -10,7 +10,7 @@ const errorHandler = require("./errors/errorHandling")
 const cors = require('cors');
 
 app.use(cors());
-app.use("/api", apiRouter); //is this app?
+app.use("/api", apiRouter); 
 apiRouter.use('/users', usersRouter);
 apiRouter.use('/topics', topicsRouter);
 apiRouter.use('/articles', articlesRouter);

@@ -190,7 +190,6 @@ describe("GET /api/articles", () => {
         .get("/api/articles?topic=scuba")
         .expect(404)
         .then(({ body }) => {
-          console.log(body)
           expect(body.msg).toBe("Topic does not exist");
         });
     });

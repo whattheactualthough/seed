@@ -7,7 +7,6 @@ function errorHandler(err, req, res, next){
         res.status(400)
         .send("Invalid input")
         }else if(err.status && err.msg){
-            console.log(err)
         res.status(err.status)
         .send({msg: err.msg})
     }

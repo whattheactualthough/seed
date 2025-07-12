@@ -78,14 +78,12 @@ const selectArticles = (sort_by = "created_at", order = "DESC", topic) => {
         return db.query(queryStr, queryArgs);
       })
       .then(({ rows }) => {
-        console.log(rows)
         return rows;
       });
   } else {
     queryStr += ` GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}`;
 
     return db.query(queryStr, queryArgs).then(({ rows }) => {
-        console.log(rows)
       return rows;
     });
   }
