@@ -37,7 +37,6 @@ const selectArticleById = (article_id) => {
 
 const selectArticles = (sort_by = "created_at", order = "DESC", topic) => {
   const orderGreenList = ["ASC", "DESC"];
-
   const sortByGreenList = [
     "article_id",
     "title",
@@ -45,49 +44,57 @@ const selectArticles = (sort_by = "created_at", order = "DESC", topic) => {
     "author",
     "created_at",
     "votes",
+    "comment_count"
   ];
 
-  if (sort_by && !sortByGreenList.includes(sort_by)) {
+  if (!sortByGreenList.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid sort by value" });
   }
 
-  if (order && !orderGreenList.includes(order.toUpperCase())) {
+  if (!orderGreenList.includes(order.toUpperCase())) {
     return Promise.reject({ status: 400, msg: "Invalid order value" });
   }
 
-  let queryStr = `SELECT articles.title, 
-    articles.article_id, 
-    articles.topic, 
-    articles.author, 
-    articles.created_at, 
-    articles.votes,
-    articles.article_img_url,
-    COUNT(comments.article_id)::INT 
-    AS comment_count 
-    FROM articles 
+  let queryStr = `
+    SELECT 
+      articles.title, 
+      articles.article_id, 
+      articles.topic, 
+      articles.author, 
+      articles.created_at, 
+      articles.votes,
+      articles.article_img_url,
+      COUNT(comments.article_id)::INT AS comment_count
+    FROM articles
     LEFT JOIN comments 
-    ON articles.article_id = comments.article_id`;
+    ON articles.article_id = comments.article_id
+  `;
 
   const queryArgs = [];
 
   if (topic) {
-    queryStr += ` WHERE articles.topic = $1 GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}`;
+    queryStr += ` WHERE articles.topic = $1`;
     queryArgs.push(topic);
-    return fetchTopics(topic)
-      .then(() => {
-        return db.query(queryStr, queryArgs);
-      })
-      .then(({ rows }) => {
-        return rows;
-      });
-  } else {
-    queryStr += ` GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order}`;
+  }
 
-    return db.query(queryStr, queryArgs).then(({ rows }) => {
-      return rows;
+  queryStr += ` GROUP BY articles.article_id`;
+
+  if (sort_by === "comment_count") {
+    queryStr += ` ORDER BY comment_count ${order}`;
+  } else {
+    queryStr += ` ORDER BY articles.${sort_by} ${order}`;
+  }
+
+  if (topic) {
+    return fetchTopics(topic).then(() => {
+      return db.query(queryStr, queryArgs).then(({ rows }) => rows);
     });
+  } else {
+    return db.query(queryStr, queryArgs).then(({ rows }) => rows);
   }
 };
+
+
 
 const updateArticleVotes = (article_id, inc_votes) => {
   const article_id_num = parseInt(article_id);
